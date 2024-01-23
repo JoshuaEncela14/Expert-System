@@ -1,0 +1,28 @@
+from random import choice
+from experta import *
+
+class Light(Fact):
+    """Info about the traffic light."""
+    color = Field(str, default="green")
+
+class RobotCrossStreet(KnowledgeEngine):
+    @Rule(Light(color='green'))
+    def green_light(self):
+        print("Traffic Light Color: Green - Walk")
+
+    @Rule(Light(color='red'))
+    def red_light(self):
+        print("Traffic Light Color: Red - Don't walk")
+
+    @Rule(AS.light << Light(color=L('yellow') | L('blinking-yellow')))
+    def cautious(self, light):
+        print("Traffic Light Color:", light["color"], "- Be cautious")
+
+
+TL = RobotCrossStreet()
+TL.reset()
+random_color = choice(["green", "red", "yellow"])
+TL.declare(Light(color=random_color))
+
+# Run
+TL.run()
